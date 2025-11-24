@@ -25,20 +25,20 @@ namespace Gameplay.Engine.Moves
         /// 
         /// A value of zero prevents movement entirely.
         /// </summary>
-        public int MaxSteps { get; set; }
+        public int MaxSteps { get; private set; }
 
         /// <summary>
         /// If true, movement along orthogonal directions (up, down, left, right)
         /// is permitted.
         /// </summary>
-        public bool AllowOrthogonal { get; set; }
+        public bool AllowOrthogonal { get; private set; }
 
         /// <summary>
         /// If true, movement along diagonal directions is permitted.
         /// If both <see cref="AllowOrthogonal"/> and this flag are false, the tile
         /// cannot move unless explicit tile logic handles special cases (e.g. teleporting).
         /// </summary>
-        public bool AllowDiagonal { get; set; }
+        public bool AllowDiagonal { get; private set; }
 
         /// <summary>
         /// Defines how the movement path interacts with obstacles on the board.
@@ -46,10 +46,48 @@ namespace Gameplay.Engine.Moves
         /// generally control whether the tile must avoid, may pass through, must pass
         /// through, or may push obstacles.
         /// </summary>
-        public ObstaclePassRule PassRule { get; set; }
+        public ObstaclePassRule PassRule { get; private set; }
 
         // Extensible for future variants:
         // public bool MustEndOnObjective { get; init; }
+
+        /// <summary>
+        /// Creates a new set of movement constraints to be applied during a movement action.
+        /// 
+        /// <para>
+        /// These parameters define constraints on movement and are combined with a tile's inherent
+        /// movement logic to determine the final set of legal destinations.
+        /// </para>
+        /// 
+        /// <para>
+        /// The most common default configuration allows one orthogonal step and does not allow
+        /// passing through obstacles.
+        /// </para>
+        /// </summary>
+        /// <param name="maxSteps">
+        /// The maximum number of grid steps the tile may take during this movement action.
+        /// A value of 1 limits movement to adjacent cells.
+        /// </param>
+        /// <param name="allowOrthogonal">
+        /// If <c>true</c>, movement along the four cardinal directions (up, down, left, right)
+        /// is allowed.
+        /// </param>
+        /// <param name="allowDiagonal">
+        /// If <c>true</c>, movement along diagonal directions is allowed.
+        /// </param>
+        /// <param name="passRule">
+        /// Defines how the movement path interacts with obstacles (typically other tiles).
+        /// </param>
+        public MovementRules(int maxSteps = 1,
+            bool allowOrthogonal = true,
+            bool allowDiagonal = false,
+            ObstaclePassRule passRule = ObstaclePassRule.CannotPassThrough)
+        {
+            MaxSteps = maxSteps;
+            AllowOrthogonal = allowOrthogonal;
+            AllowDiagonal = allowDiagonal;
+            PassRule = passRule;
+        }
     }
 
     /// <summary>
