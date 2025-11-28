@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SensorDefinitionTile
   m_EditorClassIdentifier: Gameplay::Gameplay.Game.Definitions.TileDefinition
   id: 0
-  typeKey: 
+  typeKey: Sensor
   maxMoveDistance: 10
   allowOrthogonal: 0
   allowDiagonal: 1

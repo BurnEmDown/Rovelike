@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MotorDefinitionTile
   m_EditorClassIdentifier: Gameplay::Gameplay.Game.Definitions.TileDefinition
   id: 0
-  typeKey: 
+  typeKey: Motor
   maxMoveDistance: 1
   allowOrthogonal: 1
   allowDiagonal: 0

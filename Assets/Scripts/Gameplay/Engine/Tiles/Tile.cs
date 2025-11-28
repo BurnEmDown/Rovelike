@@ -7,12 +7,12 @@ namespace Gameplay.Engine.Tiles
         /// <summary>
         /// Unique runtime identifier for this tile instance.
         /// </summary>
-        int Id { get; }
+        public int Id { get; }
 
         /// <summary>
         /// Stable key for tile type, e.g. "JumpJet", "Grapple".
         /// </summary>
-        string TypeKey { get; }
+        public string TypeKey { get; }
         
         public Tile(int id, string typeKey)
         {
