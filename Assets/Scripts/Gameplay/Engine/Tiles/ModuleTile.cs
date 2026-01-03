@@ -30,7 +30,7 @@ namespace Gameplay.Engine.Tiles
     /// </list>
     ///
     /// </summary>
-    public class ModuleTile : Tile, IMovingTile, IAbilityTile
+    public class ModuleTile : Tile, IMovingTile, IAbilityTile, IReadOnlyModuleTile
     {
         /// <summary>
         /// The movement behavior associated with this tile. It determines how the
