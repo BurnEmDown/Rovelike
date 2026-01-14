@@ -54,6 +54,7 @@ namespace Gameplay.Presentation.Tiles
                 return;
 
             spriteRenderer.sprite = definition.tileSprite;
+            spriteRenderer.color = definition.color;
         }
         
         /// <summary>

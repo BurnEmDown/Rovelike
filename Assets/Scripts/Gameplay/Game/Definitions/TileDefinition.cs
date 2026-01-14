@@ -22,6 +22,8 @@ namespace Gameplay.Game.Definitions
 
         //[Header("Art")]
         public Sprite tileSprite;
+
+        public Color color; // temp for testing
         // maybe color, animation, SFX, etc.
     }
 }
