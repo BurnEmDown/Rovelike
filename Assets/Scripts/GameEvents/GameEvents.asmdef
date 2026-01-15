@@ -1,0 +1,7 @@
+{
+  "name": "GameEvents",
+  "references": [
+    "GUID:f4ff6a1d1ef24174b5c7e226ea67e2eb",
+    "GUID:76d57caa1cb8435f895f70ff37425662"
+  ]
+}
