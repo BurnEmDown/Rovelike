@@ -43,6 +43,15 @@ A **private fork** may later introduce original mechanics and theming.
 ---
 
 ### 3. Engine – Implemented Systems
+
+#### Movement System
+- **Calculation**: ✅ Complete (MovementCalculator, MovementRules)
+- **Execution**: ❌ Not implemented (nothing applies moves to board)
+
+#### Tile Model
+- **Structure**: ✅ Complete
+- **Data-Driven Creation**: ⚠️ Partially implemented (factory exists but concrete tiles use hardcoded rules)
+
 #### Board System
 
 - **BoardState**
@@ -52,28 +61,6 @@ A **private fork** may later introduce original mechanics and theming.
 - **CellPos**
   - Value struct for board coordinates
 - Board is authoritative; tiles are unaware of the board
-
-#### Tile Model
-
-- **Tile** (base)
-- ModuleTile
-  - Composed of behaviors:
-    - IMovementBehavior
-    - IAbilityBehavior
-- Read-only interface:
-  - IReadOnlyModuleTile
-- Tiles are **pure data + behavior**, no Unity logic
-
-#### Movement System
-
-- **MovementRules**
-  - Max steps
-  - Orthogonal / diagonal
-  - Obstacle pass rules
-- **MovementCalculator**
-  - Stateless
-  - Computes legal move destinations
-- Supports future extensions (push, conditional movement)
 
 ---
 
@@ -167,68 +154,21 @@ A **private fork** may later introduce original mechanics and theming.
 
 ---
 
-### 9. Recommended Next Steps (In Order)
+### 9. Recommended Next Steps
 
-#### Step 1 - BoardPresenter (Presentation)
+#### Step 1 - Wire Up Existing Interaction System ✅ (Code exists, needs integration)
+- Attach InteractionSource to TileView prefab
+- Initialize it in BoardPresenter
+- Verify click events emit UserInteractionEvents
 
-**Goal:** Visualize the board cleanly
-- Create **BoardPresenter**
-- Responsibilities:
-  - Spawn **TileView** instances (via PoolManager)
-  - Position views from CellPos
-  - Sync engine -> view state
-- No interaction logic yet
+#### Step 2 - Fix Data-Driven Tile Creation 🔴
+- Remove hardcoded MovementRules from concrete tile constructors
+- Have EngineTileFactory pass TileConfig.MovementRules to behaviors
+- Verify ScriptableObject edits change tile behavior without code changes
 
----
-
-#### Step 2 - Tile Interaction Source
-
-**Goal:** Detect clicks on tiles
-- Add **InteractionSource** component
-- Uses Unity input (**IPointerClickHandler**)
-- Publishes **UserInteractionEvent**
-- No game logic inside the view
-
----
-
-#### Step 3 - Tile Selection System
-
-**Goal:** First meaningful interaction
-- Subscribe to tile click events
-- Track:
-  - Selected tile
-  - Deselection on second click
-- No movement yet
-- Add minimal visual feedback (outline, tint)
-
----
-
-#### Step 4 - Move Preview
-
-**Goal:** Connect engine -> presentation
-- On tile selection:
-  - Query **GetAvailableMoves**
-  - Visualize valid destinations
-- Still no movement execution
-
----
-
-#### Step 5 - Move Execution
-
-**Goal:** First real gameplay loop
-- Click destination cell
-- Apply move via BoardState
-- Update TileView positions
-- Clear selection
-
----
-
-#### Step 6 - Abilities (Later)
-
-- Ability contexts
-- Ability preview
-- Ability execution
-- Cooldowns / one-off rules
+#### Step 3 - Implement Movement Execution
+- Create MoveExecutor (BoardState → BoardPresenter updates)
+- Wire tile selection → move preview → move execution chain
 
 ---
 
