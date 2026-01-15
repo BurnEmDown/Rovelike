@@ -1,0 +1,10 @@
+{
+  "name": "Logging",
+  "references": [
+    "GUID:f4ff6a1d1ef24174b5c7e226ea67e2eb",
+    "GUID:cff6dd24bc3a84a68aa7dbe07e013808",
+    "GUID:7cb94ed5a24747ab86bc2de014db48fc",
+    "GUID:a9e73f8c11574de68cafb3a800b62d24",
+    "GUID:76d57caa1cb8435f895f70ff37425662"
+  ]
+}
