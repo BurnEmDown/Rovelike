@@ -161,11 +161,22 @@ private void OnDestroy()
 
 ### What Was Completed
 - ✅ PointerClickUserInteractionSource component added to TileView prefab
-- ✅ BoxCollider2D added to TileView prefab
-- ✅ BoardPresenter.SpawnTileView() initializes PointerClickUserInteractionSource
+- ✅ BoxCollider2D added to TileView prefab for physics raycasting
+- ✅ TileView implements IUserInteractionTarget interface
+- ✅ TileView initializes its own interaction source in OnEnable() (no GetComponent needed)
+- ✅ Interaction source field assigned in prefab Inspector
 - ✅ BoardController subscribes to click events in Start()
-- ✅ BoardController logs tile clicks
-- ✅ Event cleanup in OnDestroy()
+- ✅ BoardController logs tile clicks in OnTileClicked()
+- ✅ Event cleanup in BoardController.OnDestroy()
+- ✅ EventSystem exists in GameScene with Physics2DRaycaster
+- ✅ All code compiles without errors
+
+### Implementation Notes
+**Architecture Decision:** TileView now manages its own interaction initialization rather than having BoardPresenter do it. This:
+- Eliminates expensive GetComponent calls
+- Follows single responsibility principle
+- Uses Inspector-assigned references (best practice)
+- Automatically initializes when spawned from pool (OnEnable)
 
 ### Verification Steps
 To verify the implementation works:
