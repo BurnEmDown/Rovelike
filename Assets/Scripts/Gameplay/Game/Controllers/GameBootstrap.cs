@@ -39,6 +39,8 @@ namespace Gameplay.Game.Controllers
         /// </summary>
         [SerializeField] private TileLibrarySO tileLibrarySO;
         
+        [SerializeField] private BoardController boardControllerPrefab;
+        
         /// <summary>
         /// Unity lifecycle method called when the GameObject wakes.
         /// Initializes the global service layer by supplying the tile library
@@ -53,6 +55,13 @@ namespace Gameplay.Game.Controllers
         private void Awake()
         {
             GameServices.Init(tileLibrarySO);
+            
+            CreateControllerObjects();
+        }
+
+        private void CreateControllerObjects()
+        {
+            Instantiate(boardControllerPrefab);
         }
     }
 }
