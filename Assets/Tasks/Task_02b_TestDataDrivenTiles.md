@@ -505,7 +505,7 @@ namespace Gameplay.Game.Tests
 - **"IDs not incrementing"** → EngineTileFactory.nextId being reset between tests (expected - static field)
 
 ### Next Task
-After tests pass, proceed to **Task_03_MovementExecution.md** to implement the gameplay loop.
+After tests pass, proceed to **Task_02c_Documentation.md** to document the data-driven tile system.
 
 ### Related Files
 - `/Assets/Scripts/Gameplay/Engine/Tiles/EngineTileFactory.cs`

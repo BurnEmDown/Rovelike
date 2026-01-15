@@ -1,7 +1,7 @@
 # Task 03: Implement Movement Execution
 
 **Estimated Time:** 60 minutes  
-**Prerequisites:** Task_02b_TestDataDrivenTiles.md completed  
+**Prerequisites:** Task_02c_Documentation.md completed  
 **Status:** Not Started
 
 ---

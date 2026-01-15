@@ -474,7 +474,7 @@ namespace Gameplay.Presentation.Tests
 - **"Test times out"** → Remove any `yield return` or async code (use Edit Mode tests only)
 
 ### Next Task
-After tests pass, proceed to **Task_02_FixDataDrivenTiles.md** to fix the factory bypass issue.
+After tests pass, proceed to **Task_01c_Documentation.md** to document the interaction system.
 
 ### Related Files
 - `/Assets/Scripts/Gameplay/Presentation/Tiles/TileView.cs`

@@ -529,7 +529,7 @@ If you want to invest in visual regression testing:
 - **No performance baselines** → Add FPS requirements to protocol
 
 ### Next Task
-After visual tests pass, proceed to **Task_05_SimpleObjective.md** to implement win conditions.
+After visual tests pass, proceed to **Task_04c_Documentation.md** to document the visual feedback system.
 
 ### Related Files
 - `/Assets/Tasks/VisualTestProtocol.md` (created in this task)

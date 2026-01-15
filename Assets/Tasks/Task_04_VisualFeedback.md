@@ -1,7 +1,7 @@
 # Task 04: Add Visual Feedback
 
 **Estimated Time:** 45-60 minutes  
-**Prerequisites:** Task_03b_TestMovementExecution.md completed  
+**Prerequisites:** Task_03c_Documentation.md completed  
 **Status:** Not Started
 
 ---

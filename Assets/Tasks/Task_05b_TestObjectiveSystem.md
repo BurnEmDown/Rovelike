@@ -527,7 +527,9 @@ public void ExecuteMove_ObjectiveNotMet_NoEventFired()
 - **"NullReferenceException"** → Ensure MonoBehaviour created in Setup
 
 ### Next Steps
-You now have a **complete minimum playable game**:
+After tests pass, proceed to **Task_05c_Documentation.md** to document the objective system.
+
+Once Task_05c is complete, you will have a **complete minimum playable game** that is fully documented:
 - ✅ Board visualization
 - ✅ Tile selection
 - ✅ Move preview

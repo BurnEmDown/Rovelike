@@ -1,7 +1,7 @@
 # Task 05: Simple Objective System
 
 **Estimated Time:** 45-60 minutes  
-**Prerequisites:** Task_04b_VisualTestVerification.md completed  
+**Prerequisites:** Task_04c_Documentation.md completed  
 **Status:** Not Started
 
 ---

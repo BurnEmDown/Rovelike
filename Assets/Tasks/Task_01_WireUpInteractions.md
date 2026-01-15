@@ -2,7 +2,7 @@
 
 **Estimated Time:** 30-60 minutes  
 **Prerequisites:** None  
-**Status:** Not Started
+**Status:** Partially Complete (see notes)
 
 ---
 
@@ -10,13 +10,14 @@
 
 The `PointerClickUserInteractionSource` component exists and is fully implemented in UnityCoreKit, but it's never instantiated or attached to `TileView` instances. The `BoardPresenter` spawns `TileView` objects via pooling but doesn't initialize any interaction sources.
 
-**Current State:**
+**Current State (Updated):**
 - ✅ `PointerClickUserInteractionSource.cs` implemented
 - ✅ `UserInteractionEvent` infrastructure ready
 - ✅ `IEventsManager` registered in CoreServices
-- ❌ No interaction source attached to TileView prefab
-- ❌ No initialization in BoardPresenter
-- ❌ No verification that click events emit
+- ✅ Interaction source attached to TileView prefab
+- ✅ BoardController subscribes to click events and logs them
+- ⚠️ BoardPresenter.SpawnTileView does NOT initialize PointerClickUserInteractionSource.Init()
+- ⚠️ This means interaction source may not be properly configured on pooled tiles
 
 **Goal:** Enable tile click detection by attaching and initializing `PointerClickUserInteractionSource` on each spawned `TileView`.
 
@@ -157,6 +158,16 @@ private void OnDestroy()
 - **"Nothing happens when I click"** → Check EventSystem exists, verify Collider2D/Image component on TileView
 - **"Null reference on interactions.Subscribe"** → CoreServices.Init() not called before BoardPresenter runs
 - **"Click detected but wrong tile"** → Z-fighting or layering issue - check tile sorting layers
+
+### What Was Already Done
+- ✅ PointerClickUserInteractionSource component added to TileView prefab
+- ✅ BoxCollider2D added to TileView prefab
+- ✅ BoardController subscribes to click events in Start()
+- ✅ BoardController logs tile clicks
+
+### What Still Needs To Be Done
+- ❌ Add PointerClickUserInteractionSource.Init() call in BoardPresenter.SpawnTileView()
+- ❌ Verify interaction source works correctly on pooled/respawned tiles
 
 ### Next Task
 After this task passes tests, proceed to **Task_01b_TestInteractions.md** to add unit tests for the interaction system.

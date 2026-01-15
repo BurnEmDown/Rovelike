@@ -553,7 +553,7 @@ namespace Gameplay.Engine.Tests
 - **"GameObject destroyed"** → Ensure TearDown properly cleans up
 
 ### Next Task
-After tests pass, proceed to **Task_04_VisualFeedback.md** to add selection highlights and move animations.
+After tests pass, proceed to **Task_03c_Documentation.md** to document the movement execution system.
 
 ### Related Files
 - `/Assets/Scripts/Gameplay/Game/Controllers/TileSelectionController.cs`
