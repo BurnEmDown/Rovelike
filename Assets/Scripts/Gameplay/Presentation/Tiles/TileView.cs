@@ -3,6 +3,8 @@ using Gameplay.Engine.Tiles;
 using Gameplay.Game.Definitions;
 using UnityCoreKit.Runtime.Core.Interfaces;
 using UnityCoreKit.Runtime.Core.Services;
+using UnityCoreKit.Runtime.UserInteractions;
+using UnityCoreKit.Runtime.UserInteractions.Unity;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static Gameplay.Engine.Board.Structs;
@@ -14,9 +16,10 @@ namespace Gameplay.Presentation.Tiles
     /// Unity view for rendering a tile and forwarding user interaction.
     /// Holds a read-only reference to the engine tile model and its current board position.
     /// </summary>
-    public class TileView : MonoBehaviour
+    public class TileView : MonoBehaviour, IUserInteractionTarget
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
+        [SerializeField] private PointerClickUserInteractionSource interactionSource;
         
         private IReadOnlyModuleTile moduleTile;
         private CellPos boardPosition;
@@ -34,6 +37,16 @@ namespace Gameplay.Presentation.Tiles
         /// The tile's current board coordinate as known by this view.
         /// </summary>
         public CellPos BoardPosition => boardPosition;
+
+        private void OnEnable()
+        {
+            // Initialize interaction source when tile view is enabled (spawned from pool)
+            if (interactionSource != null)
+            {
+                var interactions = CoreServices.Get<IUserInteractions>();
+                interactionSource.Init(interactions, this);
+            }
+        }
 
         private void OnDisable()
         {

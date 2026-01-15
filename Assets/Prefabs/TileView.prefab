@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Gameplay::Gameplay.Presentation.Tiles.TileView
   spriteRenderer: {fileID: 8786358669076885008}
+  interactionSource: {fileID: 8743059787950143277}
 --- !u!114 &8743059787950143277
 MonoBehaviour:
   m_ObjectHideFlags: 0

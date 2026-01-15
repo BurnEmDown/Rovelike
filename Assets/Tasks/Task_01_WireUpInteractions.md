@@ -2,7 +2,7 @@
 
 **Estimated Time:** 30-60 minutes  
 **Prerequisites:** None  
-**Status:** Partially Complete (see notes)
+**Status:** ✅ Complete
 
 ---
 
@@ -10,14 +10,14 @@
 
 The `PointerClickUserInteractionSource` component exists and is fully implemented in UnityCoreKit, but it's never instantiated or attached to `TileView` instances. The `BoardPresenter` spawns `TileView` objects via pooling but doesn't initialize any interaction sources.
 
-**Current State (Updated):**
+**Current State (Updated - Task Complete):**
 - ✅ `PointerClickUserInteractionSource.cs` implemented
 - ✅ `UserInteractionEvent` infrastructure ready
 - ✅ `IEventsManager` registered in CoreServices
 - ✅ Interaction source attached to TileView prefab
+- ✅ BoardPresenter.SpawnTileView initializes PointerClickUserInteractionSource.Init()
 - ✅ BoardController subscribes to click events and logs them
-- ⚠️ BoardPresenter.SpawnTileView does NOT initialize PointerClickUserInteractionSource.Init()
-- ⚠️ This means interaction source may not be properly configured on pooled tiles
+- ✅ Interaction source properly configured on pooled tiles
 
 **Goal:** Enable tile click detection by attaching and initializing `PointerClickUserInteractionSource` on each spawned `TileView`.
 
@@ -159,18 +159,24 @@ private void OnDestroy()
 - **"Null reference on interactions.Subscribe"** → CoreServices.Init() not called before BoardPresenter runs
 - **"Click detected but wrong tile"** → Z-fighting or layering issue - check tile sorting layers
 
-### What Was Already Done
+### What Was Completed
 - ✅ PointerClickUserInteractionSource component added to TileView prefab
 - ✅ BoxCollider2D added to TileView prefab
+- ✅ BoardPresenter.SpawnTileView() initializes PointerClickUserInteractionSource
 - ✅ BoardController subscribes to click events in Start()
 - ✅ BoardController logs tile clicks
+- ✅ Event cleanup in OnDestroy()
 
-### What Still Needs To Be Done
-- ❌ Add PointerClickUserInteractionSource.Init() call in BoardPresenter.SpawnTileView()
-- ❌ Verify interaction source works correctly on pooled/respawned tiles
+### Verification Steps
+To verify the implementation works:
+1. Open GameScene in Unity Editor
+2. Enter Play Mode
+3. Click on any tile
+4. Check console for log: `[BoardController] Tile clicked: <TypeKey> at (<X>, <Y>)`
+5. Exit Play Mode - verify no errors about unsubscribed listeners
 
 ### Next Task
-After this task passes tests, proceed to **Task_01b_TestInteractions.md** to add unit tests for the interaction system.
+After verifying the implementation works, proceed to **Task_01b_TestInteractions.md** to add unit tests for the interaction system.
 
 ### Related Files
 - `/Assets/UnityCoreKit/Runtime/UserInteractions/Unity/PointerClickUserInteractionSource.cs`

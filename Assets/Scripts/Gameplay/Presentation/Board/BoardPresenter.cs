@@ -5,12 +5,8 @@ using Gameplay.Engine.Tiles;
 using Gameplay.Game.Services;
 using Gameplay.Presentation.Tiles;
 using UnityCoreKit.Runtime.Core.Interfaces;
-using UnityCoreKit.Runtime.Core.Services;
-using UnityCoreKit.Runtime.UserInteractions;
-using UnityCoreKit.Runtime.UserInteractions.Unity;
 using UnityEngine;
 using static Gameplay.Engine.Board.Structs;
-using Logger = UnityCoreKit.Runtime.Core.Utils.Logs.Logger;
 
 namespace Gameplay.Presentation.Board
 {
