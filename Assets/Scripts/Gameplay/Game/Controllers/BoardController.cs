@@ -3,6 +3,11 @@ using Gameplay.Engine.Board;
 using Gameplay.Engine.Tiles;
 using Gameplay.Game.Definitions;
 using Gameplay.Game.Services;
+using Gameplay.Presentation.Board;
+using Gameplay.Presentation.Tiles;
+using UnityCoreKit.Runtime.Core.Interfaces;
+using UnityCoreKit.Runtime.Core.Services;
+using UnityCoreKit.Runtime.UserInteractions;
 using UnityEngine;
 using static Gameplay.Engine.Board.Structs;
 using Logger = UnityCoreKit.Runtime.Core.Utils.Logs.Logger;
@@ -54,6 +59,8 @@ namespace Gameplay.Game.Controllers
         /// </summary>
         [SerializeField] private int height = 2;
 
+        [SerializeField] private BoardPresenter boardPresenter;
+        
         /// <summary>
         /// Currently unused field. Consider removing or repurposing.
         /// If intended, it may later hold cached definitions or a direct reference to a TileLibrarySO.
@@ -65,7 +72,7 @@ namespace Gameplay.Game.Controllers
         /// Stores tile placements and provides lookup utilities.
         /// </summary>
         private BoardState board;
-
+        
         /// <summary>
         /// The list of engine-level tile instances created during initialization.
         /// These are placed onto <see cref="board"/> in <see cref="CreateAndFillBoard"/>.
@@ -73,30 +80,35 @@ namespace Gameplay.Game.Controllers
         private List<ModuleTile> tiles = new();
 
         /// <summary>
-        /// Unity lifecycle method called when the object awakens.
-        ///
-        /// <para>
         /// Creates the tile instances early so that the list is ready by <see cref="Start"/>.
         /// This assumes <see cref="GameServices.Init"/> was already called by a bootstrap component
         /// (e.g., <c>GameBootstrap</c>) earlier in the scene initialization order.
-        /// </para>
         /// </summary>
         private void Awake()
         {
             CreateTiles();
+            boardPresenter.Init(CoreServices.Get<IPoolManager>());
         }
 
         /// <summary>
-        /// Unity lifecycle method called on the first frame.
-        ///
-        /// <para>
         /// Creates a new <see cref="BoardState"/> and places the previously created tiles
         /// into random unique positions on the board.
-        /// </para>
         /// </summary>
         private void Start()
         {
             CreateAndFillBoard();
+            
+            boardPresenter.Rebuild(board);
+            
+            // Subscribe to tile click events for verification
+            var interactions = CoreServices.Get<IUserInteractions>();
+            interactions.Subscribe(this, OnTileClicked);
+        }
+        
+        private void OnDestroy()
+        {
+            var interactions = CoreServices.Get<IUserInteractions>();
+            interactions?.UnsubscribeAll(this); // Cleanup owner-based subscriptions
         }
         
         /// <summary>
@@ -205,6 +217,14 @@ namespace Gameplay.Game.Controllers
                     Logger.Log(
                         $"[CreateAndFillBoard] Placed tile {tile.TypeKey} at ({pos.X}, {pos.Y})");
                 }
+            }
+        }
+        
+        private void OnTileClicked(UserInteractionEvent evt)
+        {
+            if (evt.Target is TileView tileView)
+            {
+                Debug.Log($"[BoardController] Tile clicked: {tileView.Tile.TypeKey} at ({tileView.BoardPosition.X}, {tileView.BoardPosition.Y})");
             }
         }
     }
