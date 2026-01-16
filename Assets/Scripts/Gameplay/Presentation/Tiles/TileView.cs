@@ -15,17 +15,40 @@ namespace Gameplay.Presentation.Tiles
     /// <summary>
     /// Unity view for rendering a tile and forwarding user interaction.
     /// Holds a read-only reference to the engine tile model and its current board position.
+    /// 
+    /// <para>
+    /// Implements <see cref="IUserInteractionTarget"/> to participate in the application's
+    /// event-based interaction system. When clicked, the attached 
+    /// <see cref="PointerClickUserInteractionSource"/> emits a <see cref="UserInteractionEvent"/>
+    /// with this TileView as the target.
+    /// </para>
+    /// 
+    /// <para>
+    /// Architecture Note: TileView manages its own interaction initialization in <see cref="OnEnable"/>
+    /// using an Inspector-assigned reference to avoid expensive GetComponent calls. This follows
+    /// best practices for pooled objects that are frequently enabled/disabled.
+    /// </para>
     /// </summary>
     public class TileView : MonoBehaviour, IUserInteractionTarget
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
+        
+        [Tooltip("Interaction source component that converts Unity click events to UserInteractionEvents. Assigned in Inspector.")]
         [SerializeField] private PointerClickUserInteractionSource interactionSource;
         
         private IReadOnlyModuleTile moduleTile;
         private CellPos boardPosition;
 
-        // IUserInteractionTarget
+        /// <summary>
+        /// IUserInteractionTarget key identifying this as a tile interaction target.
+        /// Used by event handlers to filter interaction types.
+        /// </summary>
         public string InteractionKey => "Tile";
+        
+        /// <summary>
+        /// The underlying engine model represented by this view.
+        /// Event handlers can cast this to <see cref="IReadOnlyModuleTile"/> for logic.
+        /// </summary>
         public object Model => moduleTile;
         
         /// <summary>
@@ -38,6 +61,22 @@ namespace Gameplay.Presentation.Tiles
         /// </summary>
         public CellPos BoardPosition => boardPosition;
 
+        /// <summary>
+        /// Initializes the interaction source when this tile view is enabled (spawned from pool).
+        /// </summary>
+        /// <remarks>
+        /// Design Decision: Self-Initialization Pattern
+        /// TileView initializes its own interaction source rather than having external code
+        /// (like BoardPresenter) manage it. This approach:
+        /// - Eliminates expensive GetComponent calls (uses Inspector-assigned reference)
+        /// - Follows single responsibility principle (TileView owns its interaction setup)
+        /// - Automatically handles pooling (re-initializes each time enabled)
+        /// - Keeps BoardPresenter decoupled from the interaction system
+        /// 
+        /// The interaction source must be re-initialized each time the view is enabled because:
+        /// - Service references may have changed
+        /// - Target binding must be refreshed for the pooled instance
+        /// </remarks>
         private void OnEnable()
         {
             // Initialize interaction source when tile view is enabled (spawned from pool)
@@ -48,6 +87,9 @@ namespace Gameplay.Presentation.Tiles
             }
         }
 
+        /// <summary>
+        /// Cleans up references when this tile view is disabled (returned to pool).
+        /// </summary>
         private void OnDisable()
         {
             moduleTile = null;
