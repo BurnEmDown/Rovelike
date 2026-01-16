@@ -17,6 +17,8 @@ namespace Gameplay.Engine.Tiles
     /// <para>
     /// The factory ensures that each tile receives a unique, engine-level ID and
     /// initializes its movement and ability behaviors based on the provided config.
+    /// Tiles are configured via composition using behavior objects, making the system
+    /// fully data-driven.
     /// </para>
     /// </summary>
     public static class EngineTileFactory
@@ -49,12 +51,6 @@ namespace Gameplay.Engine.Tiles
         ///     <see cref="TileConfig.AbilityBehavior"/>.
         ///     </description></item>
         /// </list>
-        ///
-        /// <para>
-        /// This method does not apply any Unity-specific configuration such as
-        /// sprites, animations, or ScriptableObject data. Those concerns belong to
-        /// the Unity adaptor factory.
-        /// </para>
         /// </summary>
         /// <param name="config">
         /// Configuration object describing the tile's movement rules, ability
