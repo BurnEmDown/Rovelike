@@ -93,6 +93,7 @@ namespace Gameplay.Game.Controllers
         /// <summary>
         /// Creates a new <see cref="BoardState"/> and places the previously created tiles
         /// into random unique positions on the board.
+        /// Also subscribes to tile click events for verification logging.
         /// </summary>
         private void Start()
         {
@@ -101,10 +102,21 @@ namespace Gameplay.Game.Controllers
             boardPresenter.Rebuild(board);
             
             // Subscribe to tile click events for verification
+            // Uses ownership-based subscription (passing 'this' as owner)
+            // This allows automatic cleanup via UnsubscribeAll in OnDestroy
             var interactions = CoreServices.Get<IUserInteractions>();
             interactions.Subscribe(this, OnTileClicked);
         }
         
+        /// <summary>
+        /// Cleans up all event subscriptions owned by this controller.
+        /// </summary>
+        /// <remarks>
+        /// Ownership-Based Cleanup Pattern:
+        /// UnsubscribeAll(this) removes all subscriptions where 'this' was passed as the owner.
+        /// This prevents memory leaks from orphaned event subscriptions and is the recommended
+        /// pattern for all MonoBehaviours that subscribe to global events.
+        /// </remarks>
         private void OnDestroy()
         {
             var interactions = CoreServices.Get<IUserInteractions>();
@@ -220,6 +232,24 @@ namespace Gameplay.Game.Controllers
             }
         }
         
+        /// <summary>
+        /// Handles tile click events for logging and verification.
+        /// </summary>
+        /// <param name="evt">The interaction event containing the target TileView and click details.</param>
+        /// <remarks>
+        /// This is currently a temporary test handler used to verify the interaction system works.
+        /// In production, tile clicks should be handled by dedicated controllers (e.g., TileSelectionController)
+        /// rather than directly in BoardController.
+        /// 
+        /// Pattern Note:
+        /// This handler demonstrates the type-checking pattern for interaction events:
+        /// 1. Check if evt.Target is the expected type (TileView)
+        /// 2. Extract data from the target
+        /// 3. Perform game logic
+        /// 
+        /// This pattern allows multiple different interaction targets to coexist in the same
+        /// event stream, with handlers filtering by type.
+        /// </remarks>
         private void OnTileClicked(UserInteractionEvent evt)
         {
             if (evt.Target is TileView tileView)
