@@ -4,10 +4,8 @@ using Gameplay.Engine.Tiles;
 using Gameplay.Game.Definitions;
 using Gameplay.Game.Services;
 using Gameplay.Presentation.Board;
-using Gameplay.Presentation.Tiles;
 using UnityCoreKit.Runtime.Core.Interfaces;
 using UnityCoreKit.Runtime.Core.Services;
-using UnityCoreKit.Runtime.UserInteractions;
 using UnityEngine;
 using static Gameplay.Engine.Board.Structs;
 using Logger = UnityCoreKit.Runtime.Core.Utils.Logs.Logger;
@@ -59,13 +57,21 @@ namespace Gameplay.Game.Controllers
         /// </summary>
         [SerializeField] private int height = 2;
 
+        [Header("Presentation")]
         [SerializeField] private BoardPresenter boardPresenter;
+        
+        [Header("Controllers")]
+        [SerializeField] private TileSelectionController selectionController = null!;
+        [SerializeField] private MovePreviewController movePreviewController = null!;
+        [SerializeField] private DestinationClickHandler destinationClickHandler = null!;
         
         /// <summary>
         /// Currently unused field. Consider removing or repurposing.
         /// If intended, it may later hold cached definitions or a direct reference to a TileLibrarySO.
         /// </summary>
         private TileDefinition[] tileLibrarySO;
+
+        private MoveExecutor? moveExecutor;
 
         /// <summary>
         /// The engine-level board state backing this controller.
@@ -93,34 +99,30 @@ namespace Gameplay.Game.Controllers
         /// <summary>
         /// Creates a new <see cref="BoardState"/> and places the previously created tiles
         /// into random unique positions on the board.
-        /// Also subscribes to tile click events for verification logging.
+        /// Also initializes all game systems (movement, selection, preview).
         /// </summary>
         private void Start()
         {
             CreateAndFillBoard();
-            
             boardPresenter.Rebuild(board);
-            
-            // Subscribe to tile click events for verification
-            // Uses ownership-based subscription (passing 'this' as owner)
-            // This allows automatic cleanup via UnsubscribeAll in OnDestroy
-            var interactions = CoreServices.Get<IUserInteractions>();
-            interactions.Subscribe(this, OnTileClicked);
+            InitializeGameSystems();
         }
         
         /// <summary>
-        /// Cleans up all event subscriptions owned by this controller.
+        /// Initializes all game systems after board creation.
         /// </summary>
-        /// <remarks>
-        /// Ownership-Based Cleanup Pattern:
-        /// UnsubscribeAll(this) removes all subscriptions where 'this' was passed as the owner.
-        /// This prevents memory leaks from orphaned event subscriptions and is the recommended
-        /// pattern for all MonoBehaviours that subscribe to global events.
-        /// </remarks>
-        private void OnDestroy()
+        private void InitializeGameSystems()
         {
-            var interactions = CoreServices.Get<IUserInteractions>();
-            interactions?.UnsubscribeAll(this); // Cleanup owner-based subscriptions
+            // Initialize move preview
+            movePreviewController.Init(board);
+
+            // Create move executor
+            moveExecutor = new MoveExecutor(board, boardPresenter);
+
+            // Initialize destination handler
+            destinationClickHandler.Init(board, moveExecutor);
+
+            Debug.Log("[BoardController] All game systems initialized");
         }
         
         /// <summary>
@@ -229,32 +231,6 @@ namespace Gameplay.Game.Controllers
                     Logger.Log(
                         $"[CreateAndFillBoard] Placed tile {tile.TypeKey} at ({pos.X}, {pos.Y})");
                 }
-            }
-        }
-        
-        /// <summary>
-        /// Handles tile click events for logging and verification.
-        /// </summary>
-        /// <param name="evt">The interaction event containing the target TileView and click details.</param>
-        /// <remarks>
-        /// This is currently a temporary test handler used to verify the interaction system works.
-        /// In production, tile clicks should be handled by dedicated controllers (e.g., TileSelectionController)
-        /// rather than directly in BoardController.
-        /// 
-        /// Pattern Note:
-        /// This handler demonstrates the type-checking pattern for interaction events:
-        /// 1. Check if evt.Target is the expected type (TileView)
-        /// 2. Extract data from the target
-        /// 3. Perform game logic
-        /// 
-        /// This pattern allows multiple different interaction targets to coexist in the same
-        /// event stream, with handlers filtering by type.
-        /// </remarks>
-        private void OnTileClicked(UserInteractionEvent evt)
-        {
-            if (evt.Target is TileView tileView)
-            {
-                Debug.Log($"[BoardController] Tile clicked: {tileView.Tile.TypeKey} at ({tileView.BoardPosition.X}, {tileView.BoardPosition.Y})");
             }
         }
     }

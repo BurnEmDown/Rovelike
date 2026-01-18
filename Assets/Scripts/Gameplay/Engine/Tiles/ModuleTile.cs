@@ -39,6 +39,11 @@ namespace Gameplay.Engine.Tiles
         protected readonly IMovementBehavior movementBehavior;
 
         /// <summary>
+        /// Gets the movement behavior that determines how this tile can move.
+        /// </summary>
+        public IMovementBehavior MovementBehavior => movementBehavior;
+
+        /// <summary>
         /// The ability behavior associated with this tile. It determines whether
         /// the tile's ability is available and what actions it may perform.
         /// </summary>

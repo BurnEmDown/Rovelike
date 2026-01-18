@@ -44,7 +44,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d3cc804acb442f18813f03e2ae5e688, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Gameplay::Gameplay.Presentation.Board.BoardPresenter
-  tileViewPrefab: {fileID: -5550260279515439859, guid: 1ea9dc00cfdd54ac99e93dca2e97d40c, type: 3}
   tileViewPoolName: TileView
   tileRoot: {fileID: 0}
   origin: {x: 0, y: 0, z: 0}
@@ -59,6 +58,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5887859554521529025}
   - component: {fileID: 3950593185962712095}
+  - component: {fileID: 914614126299044467}
+  - component: {fileID: 5190447503799380931}
+  - component: {fileID: 7715248846685051727}
   m_Layer: 0
   m_Name: BoardController
   m_TagString: Untagged
@@ -97,3 +99,48 @@ MonoBehaviour:
   width: 3
   height: 2
   boardPresenter: {fileID: 8245932394596817200}
+  selectionController: {fileID: 914614126299044467}
+  movePreviewController: {fileID: 5190447503799380931}
+  destinationClickHandler: {fileID: 7715248846685051727}
+--- !u!114 &914614126299044467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357804496999084932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47d54b8bbbeba4c3aa717b87e08be900, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Gameplay::Gameplay.Game.Controllers.TileSelectionController
+--- !u!114 &5190447503799380931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357804496999084932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 731378908f7d54b16bd8b0c0f69751eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Gameplay::Gameplay.Game.Controllers.MovePreviewController
+  selectionController: {fileID: 914614126299044467}
+  highlightPrefab: {fileID: 5622430362214977302, guid: 38472ec8578b345849e3f5cbf0a3e1c3, type: 3}
+  highlightParent: {fileID: 0}
+  highlightColor: {r: 0, g: 1, b: 0, a: 0.3}
+--- !u!114 &7715248846685051727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357804496999084932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5be233e8916146a6a4fa5d44bf39f3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Gameplay::Gameplay.Game.Controllers.DestinationClickHandler
+  selectionController: {fileID: 914614126299044467}
+  movePreviewController: {fileID: 5190447503799380931}

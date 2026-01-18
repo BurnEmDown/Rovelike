@@ -69,6 +69,14 @@ namespace Gameplay.Engine.Board
         bool TryPlaceTile(CellPos pos, Tile tile);
 
         /// <summary>
+        /// Moves a tile from one position to another on the board.
+        /// This operation assumes the origin contains a tile and the destination is valid.
+        /// </summary>
+        /// <param name="from">The position to move the tile from.</param>
+        /// <param name="to">The position to move the tile to.</param>
+        void MoveTile(CellPos from, CellPos to);
+
+        /// <summary>
         /// Determines whether a position lies within the board's boundaries.
         /// A position is considered valid if: <br/>
         /// <c>0 &lt;= x &lt; Width</c> and <c>0 &lt;= y &lt; Height</c>.
