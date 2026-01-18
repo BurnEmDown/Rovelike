@@ -73,18 +73,18 @@ Make the highlight objects themselves clickable.
 
 ### Step 1: Create BoardCoordinateUtility
 
-**File:** `/Assets/Scripts/Gameplay/Presentation/Board/BoardCoordinateUtility.cs`
+**File:** `/Assets/Scripts/Gameplay/Utilities/BoardCoordinateUtility.cs`
 
 Create a static utility class for coordinate conversions:
 
 ```csharp
 using UnityEngine;
-using static Gameplay.Engine.Board.Structs;
 
-namespace Gameplay.Presentation.Board
+namespace Gameplay.Utilities
 {
     /// <summary>
     /// Utility class for converting between world coordinates and board cell positions.
+    /// Uses Unity's Vector2Int for grid positions to avoid external dependencies.
     /// </summary>
     public static class BoardCoordinateUtility
     {
@@ -94,28 +94,28 @@ namespace Gameplay.Presentation.Board
         /// <param name="worldPosition">Position in world space</param>
         /// <param name="origin">World position of board cell (0,0)</param>
         /// <param name="cellSize">Size of each board cell in world units</param>
-        /// <returns>Board cell position</returns>
-        public static CellPos WorldToBoardPos(Vector3 worldPosition, Vector3 origin, Vector2 cellSize)
+        /// <returns>Board cell position as Vector2Int</returns>
+        public static Vector2Int WorldToBoardPos(Vector3 worldPosition, Vector3 origin, Vector2 cellSize)
         {
             var localPos = worldPosition - origin;
             int x = Mathf.RoundToInt(localPos.x / cellSize.x);
             int y = Mathf.RoundToInt(localPos.y / cellSize.y);
             
-            return new CellPos { X = x, Y = y };
+            return new Vector2Int(x, y);
         }
 
         /// <summary>
         /// Converts board cell position to world position (center of cell).
         /// </summary>
-        /// <param name="boardPos">Board cell position</param>
+        /// <param name="boardPos">Board cell position as Vector2Int</param>
         /// <param name="origin">World position of board cell (0,0)</param>
         /// <param name="cellSize">Size of each board cell in world units</param>
         /// <returns>World position at center of cell</returns>
-        public static Vector3 BoardToWorldPos(CellPos boardPos, Vector3 origin, Vector2 cellSize)
+        public static Vector3 BoardToWorldPos(Vector2Int boardPos, Vector3 origin, Vector2 cellSize)
         {
             return origin + new Vector3(
-                boardPos.X * cellSize.x,
-                boardPos.Y * cellSize.y,
+                boardPos.x * cellSize.x,
+                boardPos.y * cellSize.y,
                 0
             );
         }
@@ -140,6 +140,8 @@ namespace Gameplay.Presentation.Board
 Add these methods that use the utility class:
 
 ```csharp
+using Gameplay.Utilities; // Add this import
+
 /// <summary>
 /// Converts screen position to board cell position.
 /// </summary>
@@ -155,7 +157,8 @@ public CellPos? ScreenToBoardPos(Vector3 screenPosition)
 /// </summary>
 public CellPos? WorldToBoardPos(Vector3 worldPosition)
 {
-    var pos = BoardCoordinateUtility.WorldToBoardPos(worldPosition, origin, cellSize);
+    var gridPos = BoardCoordinateUtility.WorldToBoardPos(worldPosition, origin, cellSize);
+    var pos = new CellPos { X = gridPos.x, Y = gridPos.y };
     
     if (board != null && board.IsInsideBounds(pos))
         return pos;
@@ -168,7 +171,8 @@ public CellPos? WorldToBoardPos(Vector3 worldPosition)
 /// </summary>
 public Vector3 BoardToWorldPos(CellPos boardPos)
 {
-    return BoardCoordinateUtility.BoardToWorldPos(boardPos, origin, cellSize);
+    var gridPos = new Vector2Int(boardPos.X, boardPos.Y);
+    return BoardCoordinateUtility.BoardToWorldPos(gridPos, origin, cellSize);
 }
 ```
 
@@ -353,9 +357,10 @@ public class HighlightClickHandler : MonoBehaviour, IPointerClickHandler
 
 ### Utility Class Benefits
 - **Testability**: Pure static methods are easy to unit test
-- **Separation of Concerns**: BoardPresenter handles bounds checking, utility handles math
+- **Zero Dependencies**: Uses only Unity's Vector2Int, no custom types or assemblies
+- **Separation of Concerns**: BoardPresenter handles bounds checking + CellPos conversion, utility handles math
 - **Configurability**: Supports different origins and cell sizes (not hardcoded)
-- **Reuse**: Other systems can convert coordinates without needing BoardPresenter reference
+- **Reuse**: Other systems can convert coordinates without needing BoardPresenter reference or Engine assemblies
 
 ### Camera Assumptions
 The implementation assumes:
@@ -383,7 +388,7 @@ After this task works, proceed to **Task_04b_TestEmptyCellClick.md** for automat
 
 ## Related Files
 
-- `/Assets/Scripts/Gameplay/Presentation/Board/BoardCoordinateUtility.cs` (NEW)
+- `/Assets/Scripts/Gameplay/Utilities/BoardCoordinateUtility.cs` (NEW)
 - `/Assets/Scripts/Gameplay/Presentation/Board/BoardPresenter.cs`
 - `/Assets/Scripts/Gameplay/Game/Controllers/EmptyCellClickDetector.cs` (NEW)
 - `/Assets/Scripts/Gameplay/Game/Controllers/DestinationClickHandler.cs`
