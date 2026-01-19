@@ -50,12 +50,19 @@ namespace Gameplay.Game.Controllers
         /// <summary>
         /// Board width (number of columns). Corresponds to the X-axis size in <see cref="BoardState"/>.
         /// </summary>
-        [SerializeField] private int width = 3;
+        [SerializeField] private int width = 8;
 
         /// <summary>
         /// Board height (number of rows). Corresponds to the Y-axis size in <see cref="BoardState"/>.
         /// </summary>
-        [SerializeField] private int height = 2;
+        [SerializeField] private int height = 8;
+
+        [Header("Initial Tile Layout")]
+        [Tooltip("Number of columns for initial tile placement.")]
+        [SerializeField] private int initialTileColumns = 3;
+
+        [Tooltip("Number of rows for initial tile placement.")]
+        [SerializeField] private int initialTileRows = 2;
 
         [Header("Presentation")]
         [SerializeField] private BoardPresenter boardPresenter;
@@ -140,8 +147,8 @@ namespace Gameplay.Game.Controllers
             // Retrieve all available tile definitions from the global tile library service.
             TileDefinition[] defs = GameServices.TileLibrary.GetAllTiles();
 
-            // Target number of tiles equals the number of cells on the board.
-            int tilesToCreate = height * width;
+            // Target number of tiles equals the initial tile layout size, not the full board.
+            int tilesToCreate = initialTileRows * initialTileColumns;
 
             // Guard against missing or empty tile library data.
             if (defs == null || defs.Length == 0)
@@ -179,12 +186,12 @@ namespace Gameplay.Game.Controllers
         
         /// <summary>
         /// Creates a new <see cref="BoardState"/> and fills it by placing each tile from
-        /// <see cref="tiles"/> into a random unique cell.
+        /// <see cref="tiles"/> into a grid formation centered on the board.
         ///
         /// <para>
-        /// Uses a Fisher–Yates shuffle of all available board positions and assigns one
-        /// position per tile. This ensures no collisions as long as the number of tiles
-        /// does not exceed the number of cells.
+        /// Places tiles in an initialTileColumns x initialTileRows grid centered within
+        /// the larger board. This leaves empty cells around the initial tile formation,
+        /// allowing tiles to move into empty spaces.
         /// </para>
         /// </summary>
         private void CreateAndFillBoard()
@@ -192,13 +199,17 @@ namespace Gameplay.Game.Controllers
             // Create engine board state.
             board = new BoardState(width, height);
 
-            // Build a list of all board positions.
+            // Calculate offset to center the initial tile grid on the board
+            int offsetX = (width - initialTileColumns) / 2;
+            int offsetY = (height - initialTileRows) / 2;
+
+            // Build a list of positions for the initial tile grid (centered)
             var positions = new List<CellPos>();
-            for (int y = 0; y < board.Height; y++)
+            for (int y = 0; y < initialTileRows; y++)
             {
-                for (int x = 0; x < board.Width; x++)
+                for (int x = 0; x < initialTileColumns; x++)
                 {
-                    positions.Add(new CellPos { X = x, Y = y });
+                    positions.Add(new CellPos { X = x + offsetX, Y = y + offsetY });
                 }
             }
 
