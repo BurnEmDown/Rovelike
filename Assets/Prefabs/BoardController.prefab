@@ -61,6 +61,7 @@ GameObject:
   - component: {fileID: 914614126299044467}
   - component: {fileID: 5190447503799380931}
   - component: {fileID: 7715248846685051727}
+  - component: {fileID: 6830066505335580755}
   m_Layer: 0
   m_Name: BoardController
   m_TagString: Untagged
@@ -96,8 +97,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c914267e4597429084184dee9d5d1457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Gameplay::Gameplay.Game.Controllers.BoardController
-  width: 3
-  height: 2
+  width: 8
+  height: 8
+  initialTileColumns: 3
+  initialTileRows: 2
   boardPresenter: {fileID: 8245932394596817200}
   selectionController: {fileID: 914614126299044467}
   movePreviewController: {fileID: 5190447503799380931}
@@ -144,3 +147,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Gameplay::Gameplay.Game.Controllers.DestinationClickHandler
   selectionController: {fileID: 914614126299044467}
   movePreviewController: {fileID: 5190447503799380931}
+--- !u!114 &6830066505335580755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3357804496999084932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 592775589de4246a6837a144e33a9ebb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Gameplay::Gameplay.Game.Controllers.EmptyCellClickDetector
+  boardPresenter: {fileID: 8245932394596817200}
+  destinationClickHandler: {fileID: 7715248846685051727}
+  selectionController: {fileID: 914614126299044467}
