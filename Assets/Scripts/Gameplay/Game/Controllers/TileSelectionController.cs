@@ -12,6 +12,8 @@ namespace Gameplay.Game.Controllers
     /// </summary>
     public class TileSelectionController : MonoBehaviour
     {
+        [SerializeField] private DestinationClickHandler? destinationClickHandler;
+        
         private TileView? selectedTileView;
         private IUserInteractions? interactions;
 
@@ -40,6 +42,19 @@ namespace Gameplay.Game.Controllers
             {
                 DeselectTile();
                 return;
+            }
+
+            // If we have a selected tile and destination handler, check if this click is a valid move destination
+            if (selectedTileView != null && destinationClickHandler != null)
+            {
+                // Try to move to the clicked tile's position (could be a push)
+                bool moveAttempted = destinationClickHandler.TryMoveSelectedTileTo(tileView.BoardPosition);
+                
+                if (moveAttempted)
+                {
+                    Debug.Log($"[TileSelectionController] Move attempted to ({tileView.BoardPosition.X}, {tileView.BoardPosition.Y}), not selecting");
+                    return; // Don't select if a move was attempted
+                }
             }
 
             // Otherwise, select the clicked tile
