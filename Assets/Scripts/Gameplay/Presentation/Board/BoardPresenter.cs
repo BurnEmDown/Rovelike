@@ -4,6 +4,7 @@ using Gameplay.Engine.Board;
 using Gameplay.Engine.Tiles;
 using Gameplay.Game.Services;
 using Gameplay.Presentation.Tiles;
+using Gameplay.Utilities;
 using UnityCoreKit.Runtime.Core.Interfaces;
 using UnityEngine;
 using static Gameplay.Engine.Board.Structs;
@@ -38,6 +39,7 @@ namespace Gameplay.Presentation.Board
         private readonly Dictionary<CellPos, TileView> viewsByPos = new();
 
         private IPoolManager? poolManager;
+        private IBoardState? board;
 
         private void Awake()
         {
@@ -64,7 +66,8 @@ namespace Gameplay.Presentation.Board
                 Debug.LogError("BoardPresenter.Rebuild called before Init(poolManager).");
                 return;
             }
-
+            this.board = board;
+            
             ClearViews();
 
             for (int y = 0; y < board.Height; y++)
@@ -123,7 +126,42 @@ namespace Gameplay.Presentation.Board
         {
             return origin + new Vector3(pos.X * cellSize.x, pos.Y * cellSize.y, 0f);
         }
+        
+        /// <summary>
+        /// Converts screen position to board cell position.
+        /// Returns null if outside board bounds.
+        /// </summary>
+        public CellPos? ScreenToBoardPos(Vector3 screenPosition)
+        {
+            var worldPos = BoardCoordinateUtility.ScreenToWorldPos(screenPosition);
+            return WorldToBoardPos(worldPos);
+        }
 
+        /// <summary>
+        /// Converts world position to board cell position.
+        /// Returns null if outside board bounds.
+        /// </summary>
+        public CellPos? WorldToBoardPos(Vector3 worldPosition)
+        {
+            var gridPos = BoardCoordinateUtility.WorldToBoardPos(worldPosition, origin, cellSize);
+            var pos = new CellPos { X = gridPos.x, Y = gridPos.y };
+            
+            if (board != null && board.IsInsideBounds(pos))
+                return pos;
+            
+            return null;
+        }
+
+        /// <summary>
+        /// Converts board position to world position (center of cell).
+        /// </summary>
+        public Vector3 BoardToWorldPos(CellPos boardPos)
+        {
+            var gridPos = new Vector2Int(boardPos.X, boardPos.Y);
+            return BoardCoordinateUtility.BoardToWorldPos(gridPos, origin, cellSize);
+        }
+
+        
         private void SpawnTileView(IReadOnlyModuleTile tile, CellPos pos)
         {
             poolManager!.GetFromPool<TileView>(
