@@ -60,11 +60,12 @@ namespace Gameplay.Game.Controllers
         /// <summary>
         /// Attempts to move the currently selected tile to the specified destination.
         /// </summary>
-        public void TryMoveSelectedTileTo(CellPos destination)
+        /// <returns>True if a move was attempted (valid or not), false if no selected tile or executor</returns>
+        public bool TryMoveSelectedTileTo(CellPos destination)
         {
             var selectedTile = selectionController.GetSelectedTile();
             if (selectedTile == null || moveExecutor == null)
-                return;
+                return false;
 
             var from = selectedTile.BoardPosition;
             
@@ -72,7 +73,7 @@ namespace Gameplay.Game.Controllers
             if (!IsValidMove(selectedTile, destination))
             {
                 Debug.LogWarning($"[DestinationClickHandler] Move to ({destination.X},{destination.Y}) is not valid");
-                return;
+                return false;
             }
 
             // Execute move
@@ -83,6 +84,8 @@ namespace Gameplay.Game.Controllers
                 // Clear selection after successful move
                 selectionController.ClearSelection();
             }
+            
+            return true; // Move was attempted and valid
         }
 
         private bool IsValidMove(TileView tileView, CellPos destination)
