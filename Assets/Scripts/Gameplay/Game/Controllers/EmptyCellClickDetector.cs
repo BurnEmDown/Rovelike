@@ -1,6 +1,7 @@
 #nullable enable
 using Gameplay.Presentation.Board;
-using Gameplay.Presentation.Tiles;
+using UnityCoreKit.Runtime.Core.UpdateManagers;
+using UnityCoreKit.Runtime.Core.UpdateManagers.Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,7 +12,7 @@ namespace Gameplay.Game.Controllers
     /// Runs before TileSelectionController to handle push moves to occupied cells.
     /// </summary>
     [DefaultExecutionOrder(-100)] // Execute before TileSelectionController
-    public class EmptyCellClickDetector : MonoBehaviour
+    public class EmptyCellClickDetector : MonoBehaviour, IUpdateObserver, ILateUpdateObserver
     {
         [SerializeField] private BoardPresenter boardPresenter = null!;
         [SerializeField] private DestinationClickHandler destinationClickHandler = null!;
@@ -25,13 +26,25 @@ namespace Gameplay.Game.Controllers
             mainCamera = Camera.main;
         }
 
-        private void LateUpdate()
+        private void OnEnable()
+        {
+            UpdateManager.RegisterObserver(this);
+            LateUpdateManager.RegisterObserver(this);
+        }
+
+        private void OnDisable()
+        {
+            UpdateManager.UnregisterObserver(this);
+            LateUpdateManager.UnregisterObserver(this);
+        }
+
+        public void ObservedLateUpdate()
         {
             // Reset flag at end of frame
             moveAttemptedThisFrame = false;
         }
 
-        private void Update()
+        public void ObservedUpdate()
         {
             // Detect mouse click using new Input System
             var mouse = Mouse.current;
