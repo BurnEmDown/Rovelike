@@ -128,9 +128,35 @@ namespace Gameplay.Presentation.Board
         }
         
         /// <summary>
-        /// Converts screen position to board cell position.
-        /// Returns null if outside board bounds.
+        /// Converts screen position to board cell position with bounds validation.
         /// </summary>
+        /// <param name="screenPosition">Position in screen space (pixels from bottom-left).</param>
+        /// <returns>
+        /// The board cell position if the screen position maps to a valid cell within bounds,
+        /// otherwise null.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// This method performs a two-step conversion:
+        /// <list type="number">
+        /// <item>Screen coordinates → World coordinates (via main camera)</item>
+        /// <item>World coordinates → Board cell position (using origin and cellSize)</item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// <strong>Coordinate System Assumptions:</strong>
+        /// - Uses the main camera for screen-to-world projection
+        /// - Assumes orthographic camera for accurate 2D coordinate mapping
+        /// - Board cells are positioned on the z=0 plane in world space
+        /// - Cell size and origin are configurable via inspector
+        /// </para>
+        /// <para>
+        /// <strong>Use Cases:</strong>
+        /// - Converting mouse clicks to board positions
+        /// - Touch input handling for mobile devices
+        /// - Any UI interaction that needs to map screen space to game board
+        /// </para>
+        /// </remarks>
         public CellPos? ScreenToBoardPos(Vector3 screenPosition)
         {
             var worldPos = BoardCoordinateUtility.ScreenToWorldPos(screenPosition);
@@ -138,9 +164,31 @@ namespace Gameplay.Presentation.Board
         }
 
         /// <summary>
-        /// Converts world position to board cell position.
-        /// Returns null if outside board bounds.
+        /// Converts world position to board cell position with bounds validation.
         /// </summary>
+        /// <param name="worldPosition">Position in world space.</param>
+        /// <returns>
+        /// The board cell position if the world position maps to a valid cell within bounds,
+        /// otherwise null.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// This method uses <see cref="BoardCoordinateUtility.WorldToBoardPos"/> to perform
+        /// the mathematical conversion, then validates the result is within the current board bounds.
+        /// </para>
+        /// <para>
+        /// <strong>Coordinate System:</strong>
+        /// - World position is relative to the configured <c>origin</c> (board cell 0,0)
+        /// - Cell size scaling is applied via the <c>cellSize</c> field
+        /// - Rounding uses <see cref="Mathf.RoundToInt"/> for cell center snapping
+        /// </para>
+        /// <para>
+        /// <strong>Edge Cases:</strong>
+        /// - Positions outside board bounds return null
+        /// - Positions at exact cell edges round to nearest cell
+        /// - Negative board coordinates are supported if within bounds
+        /// </para>
+        /// </remarks>
         public CellPos? WorldToBoardPos(Vector3 worldPosition)
         {
             var gridPos = BoardCoordinateUtility.WorldToBoardPos(worldPosition, origin, cellSize);
@@ -153,8 +201,33 @@ namespace Gameplay.Presentation.Board
         }
 
         /// <summary>
-        /// Converts board position to world position (center of cell).
+        /// Converts board cell position to world position at the center of the cell.
         /// </summary>
+        /// <param name="boardPos">The board cell position to convert.</param>
+        /// <returns>
+        /// World position at the center of the specified board cell.
+        /// </returns>
+        /// <remarks>
+        /// <para>
+        /// This is the inverse operation of <see cref="WorldToBoardPos"/>.
+        /// The returned position represents the exact center of the cell in world space,
+        /// useful for positioning GameObjects at board cell locations.
+        /// </para>
+        /// <para>
+        /// <strong>Calculation:</strong>
+        /// worldPos = origin + (boardPos * cellSize)
+        /// </para>
+        /// <para>
+        /// <strong>Use Cases:</strong>
+        /// - Positioning tile views at their board coordinates
+        /// - Creating visual effects at specific board cells
+        /// - Calculating movement paths in world space
+        /// </para>
+        /// <para>
+        /// <strong>Note:</strong> This method does not validate bounds - it will calculate
+        /// world positions for any board coordinates, even if out of bounds.
+        /// </para>
+        /// </remarks>
         public Vector3 BoardToWorldPos(CellPos boardPos)
         {
             var gridPos = new Vector2Int(boardPos.X, boardPos.Y);
