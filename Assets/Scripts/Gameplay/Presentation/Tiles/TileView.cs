@@ -33,6 +33,10 @@ namespace Gameplay.Presentation.Tiles
     {
         [SerializeField] private SpriteRenderer spriteRenderer;
         
+        [Header("Selection Visual")]
+        [Tooltip("Child GameObject that displays when this tile is selected (e.g., outline or glow effect).")]
+        [SerializeField] private GameObject selectionIndicator;
+        
         [Tooltip("Interaction source component that converts Unity click events to UserInteractionEvents. Assigned in Inspector.")]
         [SerializeField] private PointerClickUserInteractionSource interactionSource;
         
@@ -126,6 +130,33 @@ namespace Gameplay.Presentation.Tiles
         public void SetBoardPosition(CellPos newPosition)
         {
             boardPosition = newPosition;
+        }
+        
+        /// <summary>
+        /// Shows visual indication that this tile is selected.
+        /// </summary>
+        /// <remarks>
+        /// Activates the selection indicator GameObject (typically an outline or glow effect).
+        /// Called by <see cref="TileSelectionController"/> when this tile becomes selected.
+        /// </remarks>
+        public void ShowSelection()
+        {
+            if (selectionIndicator != null)
+                selectionIndicator.SetActive(true);
+        }
+
+        /// <summary>
+        /// Hides the selection visual indication.
+        /// </summary>
+        /// <remarks>
+        /// Deactivates the selection indicator GameObject.
+        /// Called by <see cref="TileSelectionController"/> when this tile is deselected
+        /// or when another tile is selected.
+        /// </remarks>
+        public void HideSelection()
+        {
+            if (selectionIndicator != null)
+                selectionIndicator.SetActive(false);
         }
     }
 }

@@ -66,10 +66,13 @@ namespace Gameplay.Game.Controllers
             // Deselect previous tile if any
             if (selectedTileView != null)
             {
+                selectedTileView.HideSelection();
                 DeselectTile();
             }
 
             selectedTileView = tileView;
+            selectedTileView.ShowSelection();
+            
             Debug.Log($"[TileSelectionController] Selected: {tileView.Tile.TypeKey} at ({tileView.BoardPosition.X}, {tileView.BoardPosition.Y})");
 
             OnTileSelected?.Invoke(tileView);
@@ -81,6 +84,8 @@ namespace Gameplay.Game.Controllers
                 return;
 
             Debug.Log($"[TileSelectionController] Deselected: {selectedTileView.Tile.TypeKey}");
+            
+            selectedTileView.HideSelection();
             selectedTileView = null;
 
             OnTileDeselected?.Invoke();

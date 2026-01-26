@@ -44,11 +44,33 @@ namespace Gameplay.Utilities
         /// <summary>
         /// Converts screen position to world position using the main camera.
         /// </summary>
-        /// <param name="screenPosition">Screen space position</param>
-        /// <returns>World position</returns>
+        /// <param name="screenPosition">Screen space position (X, Y coordinates in pixels).</param>
+        /// <returns>World position at Z=0 plane, or Vector3.zero if no main camera exists.</returns>
+        /// <remarks>
+        /// <para>
+        /// For 2D orthographic cameras, <see cref="Camera.ScreenToWorldPoint"/> requires a Z coordinate
+        /// to determine the depth plane in world space. This method automatically sets the Z coordinate
+        /// to the negative of the camera's Z position, which places the resulting point at Z=0 in world space
+        /// (where 2D game boards typically reside).
+        /// </para>
+        /// <para>
+        /// <strong>Example:</strong> If the camera is at position (0, 0, -10), this method sets screenPosition.z = 10,
+        /// resulting in a world position at Z=0.
+        /// </para>
+        /// <para>
+        /// <strong>Use Case:</strong> Converting mouse clicks or touch input to board positions in 2D games.
+        /// </para>
+        /// </remarks>
         public static Vector3 ScreenToWorldPos(Vector3 screenPosition)
         {
-            return Camera.main.ScreenToWorldPoint(screenPosition);
+            var camera = Camera.main;
+            if (camera == null)
+                return Vector3.zero;
+                
+            // For 2D orthographic camera, set Z to the negative of camera's Z position
+            // This places the point at Z=0 in world space
+            Vector3 screenPosWithZ = new Vector3(screenPosition.x, screenPosition.y, -camera.transform.position.z);
+            return camera.ScreenToWorldPoint(screenPosWithZ);
         }
     }
 }

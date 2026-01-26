@@ -4,6 +4,7 @@ using UnityCoreKit.Runtime.Core.UpdateManagers;
 using UnityCoreKit.Runtime.Core.UpdateManagers.Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Logger = UnityCoreKit.Runtime.Core.Utils.Logs.Logger;
 
 namespace Gameplay.Game.Controllers
 {
@@ -70,6 +71,7 @@ namespace Gameplay.Game.Controllers
 
         private void OnEnable()
         {
+            Logger.Log("[EmptyCellClickDetector] OnEnable - Registering with UpdateManagers");
             UpdateManager.RegisterObserver(this);
             LateUpdateManager.RegisterObserver(this);
         }
@@ -99,6 +101,7 @@ namespace Gameplay.Game.Controllers
             var mouse = Mouse.current;
             if (mouse != null && mouse.leftButton.wasPressedThisFrame)
             {
+                Logger.Log("[EmptyCellClickDetector] Mouse click detected in ObservedUpdate");
                 HandleClick(mouse.position.ReadValue());
             }
         }
@@ -133,37 +136,47 @@ namespace Gameplay.Game.Controllers
         /// </remarks>
         private void HandleClick(Vector2 screenPosition)
         {
+            Logger.Log($"[EmptyCellClickDetector] HandleClick called with screen pos: {screenPosition}");
+            
             // Only process if we have a selected tile
             var selectedTile = selectionController.GetSelectedTile();
             if (selectedTile == null)
             {
-                Debug.Log("[EmptyCellClickDetector] No tile selected, ignoring click");
+                Logger.Log("[EmptyCellClickDetector] No tile selected, ignoring click");
                 return;
             }
 
+            Logger.Log($"[EmptyCellClickDetector] Selected tile exists at ({selectedTile.BoardPosition.X}, {selectedTile.BoardPosition.Y})");
+
             // Convert screen position to board position first
-            var worldPos = mainCamera!.ScreenToWorldPoint(screenPosition);
+            // For 2D orthographic camera, use the camera's Z position to get correct world coordinates
+            Vector3 screenPosWithZ = new Vector3(screenPosition.x, screenPosition.y, -mainCamera!.transform.position.z);
+            var worldPos = mainCamera.ScreenToWorldPoint(screenPosWithZ);
+            Logger.Log($"[EmptyCellClickDetector] Converted to world pos: {worldPos}");
+            
             var boardPos = boardPresenter.WorldToBoardPos(worldPos);
             
             if (!boardPos.HasValue)
             {
-                Debug.Log("[EmptyCellClickDetector] Click outside board bounds");
+                Logger.Log("[EmptyCellClickDetector] Click outside board bounds");
                 return;
             }
 
-            Debug.Log($"[EmptyCellClickDetector] Click at board=({boardPos.Value.X}, {boardPos.Value.Y})");
+            Logger.Log($"[EmptyCellClickDetector] Click at board=({boardPos.Value.X}, {boardPos.Value.Y})");
 
-            // Check if clicking the selected tile (deselect)
             // Check if clicking the selected tile (deselect)
             if (boardPos.Value.X == selectedTile.BoardPosition.X && 
                 boardPos.Value.Y == selectedTile.BoardPosition.Y)
             {
-                Debug.Log("[EmptyCellClickDetector] Clicked selected tile, letting TileSelectionController handle deselect");
+                Logger.Log("[EmptyCellClickDetector] Clicked selected tile, letting TileSelectionController handle deselect");
                 return; // Let TileSelectionController handle deselection
             }
 
+            // Set flag to prevent TileSelectionController from processing this click
+            moveAttemptedThisFrame = true;
+
             // Try to move to this destination (empty or occupied with push)
-            Debug.Log($"[EmptyCellClickDetector] Attempting move to ({boardPos.Value.X}, {boardPos.Value.Y})");
+            Logger.Log($"[EmptyCellClickDetector] Attempting move to ({boardPos.Value.X}, {boardPos.Value.Y})");
             destinationClickHandler.TryMoveSelectedTileTo(boardPos.Value);
         }
     }
